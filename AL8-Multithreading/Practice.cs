@@ -22,7 +22,27 @@ namespace Advanced_Lesson_6_Multithreading
         /// LA8.P2/X. Написать консольное приложение, которое “делает массовую рассылку”. 
         /// </summary>
         public static void LA8_P2_5()
-        {           
+        {
+            var rnd = new Random();
+            DateTime time1, time2 = new DateTime();
+            time1 = DateTime.Now;
+
+            for (int i = 0; i < 50; i++)
+            {
+                int temp = i;   //замыкание??
+                ThreadPool.QueueUserWorkItem((object state)=> 
+                {
+                    using (StreamWriter fileCreator = new StreamWriter($@"D:\миша_документы\курсы 2018\С# basic\Wav\{temp}.txt"))
+                    {
+                        fileCreator.Write($"file {temp}");
+                        Thread.Sleep(rnd.Next(100, 500));
+                    }
+                });                
+            }
+            time2 = DateTime.Now;            
+            Console.WriteLine("\n\n\n" + ((time2 - time1).Seconds).ToString());
+            Console.ReadKey();
+
         }
 
         /// <summary>
@@ -38,7 +58,29 @@ namespace Advanced_Lesson_6_Multithreading
         /// Сохранять все “тела” “писем” в один файл. Использовать блокировку потоков, чтобы избежать проблем синхронизации.  
         /// </summary>
         public static void LA8_P4_5()
-        {            
+        {
+            var rnd = new Random();
+            object ForLock = new object();          
+
+            for (int i = 0; i < 50; i++)
+            {
+                int temp = i;   //замыкание??
+                ThreadPool.QueueUserWorkItem((object state) =>
+                {
+                    lock (ForLock)
+                    {
+                        using (StreamWriter fileCreator = new StreamWriter($@"D:\миша_документы\курсы 2018\С# basic\Wav\LA8_P4_5.txt", true))
+                        {                        
+                             fileCreator.WriteLine($"file {temp} ");                                               
+                             //Thread.Sleep(rnd.Next(100, 500));
+                        }
+                    }
+                    Thread.Sleep(rnd.Next(100, 500));
+                });
+            }
+            
+            Console.ReadKey();
+
         }
 
         /// <summary>
